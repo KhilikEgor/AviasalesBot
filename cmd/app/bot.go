@@ -1,9 +1,9 @@
 package main
 
 import (
-	"cmd/app/bot.go/internal/service"
 	"cmd/app/bot.go/internal/domain"
 	"cmd/app/bot.go/internal/handlers"
+	"cmd/app/bot.go/internal/service"
 	"flag"
 	"log"
 
@@ -40,16 +40,20 @@ func startEchoBot() error {
 
 		txt := update.Message.Text
 		var responseText string
+
+		user := domain.User{
+			ChatId: update.Message.Chat.ID,
+		}
+
+		handlers.StartVacancyChecker(bot, vacancyService, user)
+		
+
 		switch txt {
 		case "/start":
-			responseText = "Привет!"
-		case "/end":
-			responseText = "Пока :("
-		case "/vacancies":
-			user := domain.User{
-				ChatId: update.Message.Chat.ID,
-			}
-			handlers.VacancyHandler(bot, vacancyService, user)
+			handlers.WelcomeMessageHandler(bot, vacancyService, user)
+			continue
+		case "Все вакансии":
+			handlers.GetAllVacancyHandler(bot, vacancyService, user)
 			continue
 		case "/sticker":
 			sticker := tgbotapi.NewSticker(update.Message.Chat.ID, tgbotapi.FileID("CAACAgIAAxkBAAENQDBnS2_zZGpxdw7SwmUrGzDLcmNofwACw0IAAtAnyEqlQ3xNhpVNmTYE"))
