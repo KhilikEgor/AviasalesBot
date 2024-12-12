@@ -47,7 +47,7 @@ func GetAllVacancyHandler(bot *tgbotapi.BotAPI, vs *service.VacancyService, requ
 	}
 }
 
-func WelcomeMessageHandler(bot *tgbotapi.BotAPI, vs *service.VacancyService, request domain.User){
+func WelcomeMessageHandler(bot *tgbotapi.BotAPI, vs *service.VacancyService, request domain.User) {
 	vs.ParsPage()
 
 	if len(vs.Vacancies) == 0 {
@@ -61,7 +61,6 @@ func WelcomeMessageHandler(bot *tgbotapi.BotAPI, vs *service.VacancyService, req
 	}
 
 	responseMessage := "Отлично! Теперь как появится новая 🔥ГОРЯЧАЯ вакансия, ты узнаешь один из первых\n\nА пока можешь отдыхать я сделаю все сам!"
-
 
 	replyKeyboard := tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
@@ -109,4 +108,19 @@ func StartVacancyChecker(bot *tgbotapi.BotAPI, vs *service.VacancyService, reque
 			time.Sleep(600 * time.Second)
 		}
 	}()
+}
+
+func DefaultMessagesHandler(bot *tgbotapi.BotAPI, request domain.User) {
+	sticker := tgbotapi.NewSticker(request.ChatId, tgbotapi.FileID("CAACAgIAAxkBAAENQDBnS2_zZGpxdw7SwmUrGzDLcmNofwACw0IAAtAnyEqlQ3xNhpVNmTYE"))
+	_, err := bot.Send(sticker)
+	if err != nil {
+		log.Printf("Failed to send sticker: %s", err)
+	}
+
+	message := "Сейчас бот это не умеет делать. Можешь отправить свои предложения мне в личку @khilikegor"
+	msg := tgbotapi.NewMessage(request.ChatId, message)
+	_, err = bot.Send(msg)
+	if err != nil {
+		log.Printf("Failed to send message: %v", err)
+	}
 }

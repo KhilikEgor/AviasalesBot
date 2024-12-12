@@ -5,6 +5,7 @@ import (
 	"cmd/app/bot.go/internal/handlers"
 	"cmd/app/bot.go/internal/service"
 	"flag"
+	"fmt"
 	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -14,7 +15,7 @@ var (
 	BotToken = flag.String("tg.token", "", "token for telegram")
 )
 
-func startEchoBot() error {
+func startAviasalesBot() error {
 	flag.Parse()
 
 	// Инициализация бота
@@ -46,7 +47,6 @@ func startEchoBot() error {
 		}
 
 		handlers.StartVacancyChecker(bot, vacancyService, user)
-		
 
 		switch txt {
 		case "/start":
@@ -55,13 +55,10 @@ func startEchoBot() error {
 		case "Все вакансии":
 			handlers.GetAllVacancyHandler(bot, vacancyService, user)
 			continue
-		case "/sticker":
-			sticker := tgbotapi.NewSticker(update.Message.Chat.ID, tgbotapi.FileID("CAACAgIAAxkBAAENQDBnS2_zZGpxdw7SwmUrGzDLcmNofwACw0IAAtAnyEqlQ3xNhpVNmTYE"))
-			_, err := bot.Send(sticker)
-			if err != nil {
-				log.Printf("Failed to send sticker: %s", err)
-			}
+		case "Создать подписку":
+			fmt.Println("Hello World")
 		default:
+			handlers.DefaultMessagesHandler(bot, user)
 			continue
 		}
 
@@ -77,7 +74,7 @@ func startEchoBot() error {
 }
 
 func main() {
-	err := startEchoBot()
+	err := startAviasalesBot()
 	if err != nil {
 		log.Fatalf("Error starting echo bot: %s", err)
 	}
