@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cmd/app/bot.go/internal/db"
 	"cmd/app/bot.go/internal/domain"
 	"cmd/app/bot.go/internal/handlers"
 	"cmd/app/bot.go/internal/service"
@@ -18,6 +19,9 @@ var (
 func startAviasalesBot() error {
 	flag.Parse()
 
+	db.Connect()
+	db.DB.AutoMigrate(&domain.User{})
+
 	// Инициализация бота
 	bot, err := tgbotapi.NewBotAPI(*BotToken)
 	if err != nil {
@@ -30,7 +34,9 @@ func startAviasalesBot() error {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
-	vacancyService := &service.VacancyService{}
+	vacancyService := &service.VacancyService{
+		DB: db.DB,
+	}
 
 	updates := bot.GetUpdatesChan(u)
 
@@ -43,10 +49,11 @@ func startAviasalesBot() error {
 		var responseText string
 
 		user := domain.User{
-			ChatId: update.Message.Chat.ID,
+			ChatId:   update.Message.Chat.ID,
+			UserName: update.Message.Chat.UserName,
 		}
 
-		handlers.StartVacancyChecker(bot, vacancyService, user)
+		handlers.StartVacancyChecker(bot, vacancyService)
 
 		switch txt {
 		case "/start":
@@ -55,7 +62,8 @@ func startAviasalesBot() error {
 		case "Все вакансии":
 			handlers.GetAllVacancyHandler(bot, vacancyService, user)
 			continue
-		case "Создать подписку":
+		case "Отключить уведомления":
+			handlers.OffUserNotifications(bot, vacancyService, user)
 			fmt.Println("Hello World")
 		default:
 			handlers.DefaultMessagesHandler(bot, user)
