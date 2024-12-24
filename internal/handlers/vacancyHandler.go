@@ -11,7 +11,6 @@ import (
 )
 
 func GetAllVacancyHandler(bot *tgbotapi.BotAPI, vs *service.VacancyService, request domain.User) {
-	// Вызываем метод парсинга вакансий
 	allVacancy := vs.ParsPage()
 
 	// Проверяем, есть ли вакансии
@@ -36,7 +35,7 @@ func GetAllVacancyHandler(bot *tgbotapi.BotAPI, vs *service.VacancyService, requ
 
 	// Убедимся, что сообщение не превышает лимита Telegram (4096 символов)
 	if len(responseMessage) > 4096 {
-		responseMessage = responseMessage[:4093] + "..." // Урезаем сообщение
+		responseMessage = responseMessage[:4093] + "..."
 	}
 
 	// Отправляем сообщение пользователю
@@ -48,67 +47,94 @@ func GetAllVacancyHandler(bot *tgbotapi.BotAPI, vs *service.VacancyService, requ
 }
 
 func WelcomeMessageHandler(bot *tgbotapi.BotAPI, vs *service.VacancyService, request domain.User) {
-	vs.ParsPage()
+    if err := vs.SaveUser(request); err != nil {
+        log.Printf("Error saving user: %v", err)
+    }
 
-	if len(vs.Vacancies) == 0 {
-		responseMessage := "К сожалению, вакансии не найдены."
-		msg := tgbotapi.NewMessage(request.ChatId, responseMessage)
-		_, err := bot.Send(msg)
-		if err != nil {
-			log.Printf("Error sending message: %v", err)
-		}
-		return
-	}
+    vs.ParsPage()
 
-	responseMessage := "Отлично! Теперь как появится новая 🔥ГОРЯЧАЯ вакансия, ты узнаешь один из первых\n\nА пока можешь отдыхать я сделаю все сам!"
+    if len(vs.Vacancies) == 0 {
+        responseMessage := "К сожалению, вакансии не найдены."
+        msg := tgbotapi.NewMessage(request.ChatId, responseMessage)
+        _, err := bot.Send(msg)
+        if err != nil {
+            log.Printf("Error sending message: %v", err)
+        }
+        return
+    }
 
-	replyKeyboard := tgbotapi.NewReplyKeyboard(
-		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton("Все вакансии"),
-			tgbotapi.NewKeyboardButton("Создать подписку"),
-		),
-	)
+    responseMessage := "Отлично! Теперь как появится новая 🔥ГОРЯЧАЯ вакансия, ты узнаешь один из первых\n\nА пока можешь отдыхать я сделаю все сам!"
+
+    replyKeyboard := tgbotapi.NewReplyKeyboard(
+        tgbotapi.NewKeyboardButtonRow(
+            tgbotapi.NewKeyboardButton("Все вакансии"),
+            tgbotapi.NewKeyboardButton("Отключить уведомления"),
+        ),
+    )
+
+    msg := tgbotapi.NewMessage(request.ChatId, responseMessage)
+    msg.ReplyMarkup = replyKeyboard
+
+    if _, err := bot.Send(msg); err != nil {
+        log.Printf("Error sending message: %v", err)
+    }
+}
+
+
+func StartVacancyChecker(bot *tgbotapi.BotAPI, vs *service.VacancyService) {
+    initialVacancies := vs.ParsPage()
+    vs.UpdateVacancies(initialVacancies)
+
+    go func() {
+        for {
+            newVacancies := vs.ParsPage()
+            diff := vs.GetNewVacancies(newVacancies)
+
+            if len(diff) > 0 {
+                users, err := vs.GetAllUsers()
+                if err != nil {
+                    log.Printf("Failed to get users: %v", err)
+                    continue
+                }
+
+                for _, user := range users {
+                    if user.Notification {
+                        for _, vacancy := range diff {
+                            message := fmt.Sprintf(
+                                "🔥 Новая вакансия!\n\n%s\n%s\n%s\n",
+                                vacancy.Name, vacancy.Description, vacancy.Link,
+                            )
+                            msg := tgbotapi.NewMessage(user.ChatId, message)
+                            _, err := bot.Send(msg)
+                            if err != nil {
+                                log.Printf("Failed to send message to user %s: %v", user.UserName, err)
+                            }
+                        }
+                    }
+                }
+
+                vs.UpdateVacancies(newVacancies)
+            }
+            time.Sleep(600 * time.Second) // Ждем 10 минут перед следующей проверкой
+        }
+    }()
+}
+
+
+func OffUserNotifications(bot *tgbotapi.BotAPI, vs *service.VacancyService, request domain.User){
+	if err := vs.OffNotifications(request); err != nil {
+        log.Printf("Error off notifications for user: %v", err)
+    }
+
+	responseMessage := "Больше беспокоить не буду :(\n\nНо если хочешь дальше получать уведомления напиши /start"
 
 	msg := tgbotapi.NewMessage(request.ChatId, responseMessage)
-	msg.ReplyMarkup = replyKeyboard
 
-	_, err := bot.Send(msg)
-	if err != nil {
-		log.Printf("Error sending message: %v", err)
-	}
+    if _, err := bot.Send(msg); err != nil {
+        log.Printf("Error sending message: %v", err)
+    }
 }
 
-func StartVacancyChecker(bot *tgbotapi.BotAPI, vs *service.VacancyService, request domain.User) {
-	initialVacancies := vs.ParsPage()
-	vs.UpdateVacancies(initialVacancies)
-
-	go func() {
-		for {
-			newVacancies := vs.ParsPage()
-
-			diff := vs.GetNewVacancies(newVacancies)
-
-			if len(diff) > 0 {
-				// Уведомляем пользователя о новых вакансиях
-				for _, vacancy := range diff {
-					message := fmt.Sprintf(
-						"🔥 Новая вакансия!\n\n%s\n%s\n%s\n",
-						vacancy.Name, vacancy.Description, vacancy.Link,
-					)
-					msg := tgbotapi.NewMessage(request.ChatId, message)
-					_, err := bot.Send(msg)
-					if err != nil {
-						log.Printf("Failed to send message: %v", err)
-					}
-				}
-
-				vs.UpdateVacancies(newVacancies)
-			}
-
-			time.Sleep(600 * time.Second)
-		}
-	}()
-}
 
 func DefaultMessagesHandler(bot *tgbotapi.BotAPI, request domain.User) {
 	sticker := tgbotapi.NewSticker(request.ChatId, tgbotapi.FileID("CAACAgIAAxkBAAENQDBnS2_zZGpxdw7SwmUrGzDLcmNofwACw0IAAtAnyEqlQ3xNhpVNmTYE"))
