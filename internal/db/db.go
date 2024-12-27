@@ -1,20 +1,20 @@
 package db
 
 import (
-    "gorm.io/driver/postgres"
     "gorm.io/gorm"
+    "gorm.io/driver/postgres"
     "log"
 )
 
-var DB *gorm.DB
+var DB *gorm.DB // Глобальная переменная для хранения соединения
 
 func Connect() {
-    dsn := "host=localhost user=admin password=admin dbname=aviasales_bot_bd port=5432 sslmode=disable"
     var err error
+    dsn := "host=aviasales-psql-1 user=admin password=admin dbname=aviasales_bot_bd sslmode=disable"
     DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
     if err != nil {
+        log.Printf("Failed to connect to the database with DSN: %s", dsn)
         log.Fatalf("failed to connect to the database: %v", err)
     }
-
     log.Println("Connected to the database successfully!")
 }
