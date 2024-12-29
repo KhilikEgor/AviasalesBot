@@ -11,12 +11,26 @@ services:
       POSTGRES_PASSWORD: admin
     volumes:
       - db-data:/var/lib/postgresql/data
+    networks:
+      - aviasales-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d aviasales_bot_bd"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   app:
     image: khilik/server-bot-aviasales
-
+    depends_on:
+      - psql
     environment:
       - DATABASE_URL=postgres://admin:admin@psql:5432/aviasales_bot_bd
+    networks:
+      - aviasales-network
 
 volumes:
   db-data:
+
+networks:
+  aviasales-network:
+    driver: bridge
