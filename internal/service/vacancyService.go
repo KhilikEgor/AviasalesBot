@@ -141,6 +141,7 @@ func (vs *VacancyService) SaveUser(user domain.User) error {
 	}
 
 	if existingUser.ChatId == 0 {
+		user.Notification = true
 		if err := vs.DB.Create(&user).Error; err != nil {
 			return err
 		}
