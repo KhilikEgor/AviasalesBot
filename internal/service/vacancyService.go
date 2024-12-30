@@ -129,7 +129,7 @@ func (vs *VacancyService) GetNewVacancies(newVacancies []domain.Vacancy) []domai
 func (vs *VacancyService) UpdateVacancies(newVacancies []domain.Vacancy) {
 	log.Printf("Updating vacancies. Old count: %d, New count: %d", len(vs.Vacancies), len(newVacancies))
 	vs.Vacancies = newVacancies
-}
+} 
 
 func (vs *VacancyService) SaveUser(user domain.User) error {
 	var existingUser domain.User
