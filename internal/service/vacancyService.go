@@ -147,8 +147,11 @@ func (vs *VacancyService) SaveUser(user domain.User) error {
 	} else {
 		existingUser.UserName = user.UserName
 		existingUser.Notification = true
-		log.Printf("Updating existing user to username: %s", existingUser.UserName)
-		if err := vs.DB.Save(&existingUser).Error; err != nil {
+
+		if err := vs.DB.Model(&existingUser).Updates(domain.User{
+			UserName:    user.UserName,
+			Notification: true,
+		}).Error; err != nil {
 			return err
 		}
 	}

@@ -53,15 +53,15 @@ func WelcomeMessageHandler(bot *tgbotapi.BotAPI, vs *service.VacancyService, req
 
     vs.ParsPage()
 
-    if len(vs.Vacancies) == 0 {
-        responseMessage := "К сожалению, вакансии не найдены."
-        msg := tgbotapi.NewMessage(request.ChatId, responseMessage)
-        _, err := bot.Send(msg)
-        if err != nil {
-            log.Printf("Error sending message: %v", err)
-        }
-        return
-    }
+    // if len(vs.Vacancies) == 0 {
+    //     responseMessage := "К сожалению, вакансии не найдены."
+    //     msg := tgbotapi.NewMessage(request.ChatId, responseMessage)
+    //     _, err := bot.Send(msg)
+    //     if err != nil {
+    //         log.Printf("Error sending message: %v", err)
+    //     }
+    //     return
+    // }
 
     responseMessage := "Отлично! Теперь как появится новая 🔥ГОРЯЧАЯ вакансия, ты узнаешь один из первых\n\nА пока можешь отдыхать я сделаю все сам!"
 
