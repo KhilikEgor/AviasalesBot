@@ -1,14 +1,14 @@
 package main
 
 import (
-	"cmd/app/bot.go/internal/db"
-	"cmd/app/bot.go/internal/domain"
-	"cmd/app/bot.go/internal/handlers"
-	"cmd/app/bot.go/internal/service"
 	"flag"
 	"fmt"
 	"log"
 
+	"github.com/KhilikEgor/AviasalesBot/internal/db"
+	"github.com/KhilikEgor/AviasalesBot/internal/domain"
+	"github.com/KhilikEgor/AviasalesBot/internal/service"
+	"github.com/KhilikEgor/AviasalesBot/internal/handlers"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 

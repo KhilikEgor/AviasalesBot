@@ -1,4 +1,4 @@
-module cmd/app/bot.go
+module github.com/KhilikEgor/AviasalesBot
 
 go 1.23
 

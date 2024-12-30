@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"cmd/app/bot.go/internal/domain"
-	"cmd/app/bot.go/internal/service"
 	"fmt"
 	"log"
 	"time"
 
+	"github.com/KhilikEgor/AviasalesBot/internal/service"
+	"github.com/KhilikEgor/AviasalesBot/internal/domain"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 

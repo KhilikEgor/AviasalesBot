@@ -1,7 +1,7 @@
 package service
 
 import (
-	"cmd/app/bot.go/internal/domain"
+	"github.com/KhilikEgor/AviasalesBot/internal/domain"
 	"log"
 	"net/http"
 	"strings"
