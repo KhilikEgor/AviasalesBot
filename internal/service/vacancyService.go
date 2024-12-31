@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"gorm.io/gorm"
-
 	"github.com/PuerkitoBio/goquery"
 )
 
