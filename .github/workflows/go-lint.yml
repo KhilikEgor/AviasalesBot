@@ -7,22 +7,22 @@ on:
     branches: [ main ]
 
 jobs:
-  lint:
+  golangci:
+    name: lint
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: '1.23.4'
-    - name: Install golangci-lint
-      run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.50.1
-    - name: Configure golangci-lint
-      run: |
-        echo "run:" > .golangci.yml
-        echo "  include:" >> .golangci.yml
-        echo "    - ./internal" >> .golangci.yml
-        echo "    - ./cmd" >> .golangci.yml
-        echo "  skip-dirs-use-default: false" >> .golangci.yml
-    - name: Run golangci-lint
-      run: golangci-lint run
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.23.4'
+          cache: false
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.53
+      
+      - name: Run linter in internal directory
+        run: golangci-lint run ./internal/...
+      
+      - name: Run linter in cmd directory
+        run: golangci-lint run ./cmd/...
