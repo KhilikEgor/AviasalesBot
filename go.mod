@@ -1,6 +1,6 @@
 module github.com/KhilikEgor/AviasalesBot
 
-go 1.23
+go 1.23.4
 
 require (
 	github.com/PuerkitoBio/goquery v1.10.0
