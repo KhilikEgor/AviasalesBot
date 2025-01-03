@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 
-	
 	"github.com/KhilikEgor/AviasalesBot/internal/db"
 	"github.com/KhilikEgor/AviasalesBot/internal/domain"
 	"github.com/KhilikEgor/AviasalesBot/internal/service"
