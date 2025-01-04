@@ -1,13 +1,11 @@
 package service
 
 import (
-	"cmd/app/bot.go/internal/domain"
+	"github.com/KhilikEgor/AviasalesBot/internal/domain"
 	"log"
 	"net/http"
 	"strings"
-
 	"gorm.io/gorm"
-
 	"github.com/PuerkitoBio/goquery"
 )
 
@@ -129,7 +127,7 @@ func (vs *VacancyService) GetNewVacancies(newVacancies []domain.Vacancy) []domai
 func (vs *VacancyService) UpdateVacancies(newVacancies []domain.Vacancy) {
 	log.Printf("Updating vacancies. Old count: %d, New count: %d", len(vs.Vacancies), len(newVacancies))
 	vs.Vacancies = newVacancies
-}
+} 
 
 func (vs *VacancyService) SaveUser(user domain.User) error {
 	var existingUser domain.User
@@ -141,6 +139,7 @@ func (vs *VacancyService) SaveUser(user domain.User) error {
 	}
 
 	if existingUser.ChatId == 0 {
+		user.Notification = true
 		if err := vs.DB.Create(&user).Error; err != nil {
 			return err
 		}
