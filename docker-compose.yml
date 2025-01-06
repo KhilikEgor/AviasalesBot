@@ -25,6 +25,8 @@ services:
       - psql
     environment:
       - DATABASE_URL=postgres://admin:admin@psql:5432/aviasales_bot_bd
+      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+    command: go run cmd/app/main.go -tg.token=${TELEGRAM_TOKEN}
     networks:
       - aviasales-network
 

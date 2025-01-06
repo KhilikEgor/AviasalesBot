@@ -5,7 +5,6 @@ import (
 	"log"
 	"time"
 
-    
 	"github.com/KhilikEgor/AviasalesBot/internal/service"
 	"github.com/KhilikEgor/AviasalesBot/internal/domain"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -14,7 +13,6 @@ import (
 func GetAllVacancyHandler(bot *tgbotapi.BotAPI, vs *service.VacancyService, request domain.User) {
 	allVacancy := vs.ParsPage()
 
-	// Проверяем, есть ли вакансии
 	if len(allVacancy) == 0 {
 		responseMessage := "К сожалению, вакансии не найдены."
 		msg := tgbotapi.NewMessage(request.ChatId, responseMessage)
@@ -25,7 +23,6 @@ func GetAllVacancyHandler(bot *tgbotapi.BotAPI, vs *service.VacancyService, requ
 		return
 	}
 
-	// Формируем ответное сообщение
 	responseMessage := "Горячие вакансии 🔥🔥🔥\n\n"
 	for _, vacancy := range allVacancy {
 		responseMessage += fmt.Sprintf(
@@ -34,12 +31,10 @@ func GetAllVacancyHandler(bot *tgbotapi.BotAPI, vs *service.VacancyService, requ
 		)
 	}
 
-	// Убедимся, что сообщение не превышает лимита Telegram (4096 символов)
 	if len(responseMessage) > 4096 {
 		responseMessage = responseMessage[:4093] + "..."
 	}
 
-	// Отправляем сообщение пользователю
 	msg := tgbotapi.NewMessage(request.ChatId, responseMessage)
 	_, err := bot.Send(msg)
 	if err != nil {
@@ -53,16 +48,6 @@ func WelcomeMessageHandler(bot *tgbotapi.BotAPI, vs *service.VacancyService, req
     }
 
     vs.ParsPage()
-
-    // if len(vs.Vacancies) == 0 {
-    //     responseMessage := "К сожалению, вакансии не найдены."
-    //     msg := tgbotapi.NewMessage(request.ChatId, responseMessage)
-    //     _, err := bot.Send(msg)
-    //     if err != nil {
-    //         log.Printf("Error sending message: %v", err)
-    //     }
-    //     return
-    // }
 
     responseMessage := "Отлично! Теперь как появится новая 🔥ГОРЯЧАЯ вакансия, ты узнаешь один из первых\n\nА пока можешь отдыхать я сделаю все сам!"
 
