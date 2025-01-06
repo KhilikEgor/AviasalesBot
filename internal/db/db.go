@@ -6,7 +6,7 @@ import (
     "log"
 )
 
-var DB *gorm.DB // Глобальная переменная для хранения соединения
+var DB *gorm.DB
 
 func Connect() {
     var err error
@@ -14,7 +14,6 @@ func Connect() {
     DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
     if err != nil {
         log.Printf("Failed to connect to the database with DSN: %s", dsn)
-        log.Fatalf("failed to connect to the database: %v", err)
     }
     log.Println("Connected to the database successfully!")
 }

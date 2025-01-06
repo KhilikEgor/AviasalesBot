@@ -2,14 +2,19 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 
 	"github.com/KhilikEgor/AviasalesBot/internal/db"
 	"github.com/KhilikEgor/AviasalesBot/internal/domain"
-	"github.com/KhilikEgor/AviasalesBot/internal/service"
 	"github.com/KhilikEgor/AviasalesBot/internal/handlers"
+	"github.com/KhilikEgor/AviasalesBot/internal/service"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+)
+
+const (
+	startCommand            = "/start"
+	allVacanciesCommand     = "Все вакансии"
+	offNotificationsCommand = "Отключить уведомления"
 )
 
 var (
@@ -20,15 +25,17 @@ func startAviasalesBot() error {
 	flag.Parse()
 
 	db.Connect()
-	db.DB.AutoMigrate(&domain.User{})
+	err := db.DB.AutoMigrate(&domain.User{})
+	if err != nil {
+		log.Panic(err)
+	}
 
-	// Инициализация бота
 	bot, err := tgbotapi.NewBotAPI(*BotToken)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	bot.Debug = true
+	// bot.Debug = true
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
 	u := tgbotapi.NewUpdate(0)
@@ -46,7 +53,6 @@ func startAviasalesBot() error {
 		}
 
 		txt := update.Message.Text
-		var responseText string
 
 		user := domain.User{
 			ChatId:   update.Message.Chat.ID,
@@ -56,28 +62,20 @@ func startAviasalesBot() error {
 		handlers.StartVacancyChecker(bot, vacancyService)
 
 		switch txt {
-		case "/start":
+		case startCommand:
 			handlers.WelcomeMessageHandler(bot, vacancyService, user)
 			continue
-		case "Все вакансии":
+		case allVacanciesCommand:
 			handlers.GetAllVacancyHandler(bot, vacancyService, user)
 			continue
-		case "Отключить уведомления":
+		case offNotificationsCommand:
 			handlers.OffUserNotifications(bot, vacancyService, user)
-			fmt.Println("Hello World")
+			continue
 		default:
 			handlers.DefaultMessagesHandler(bot, user)
 			continue
 		}
-
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, responseText)
-		_, err := bot.Send(msg)
-		if err != nil {
-			log.Printf("Failed to send message: %s", err)
-		}
-		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 	}
-
 	return nil
 }
 
