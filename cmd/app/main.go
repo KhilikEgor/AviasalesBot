@@ -35,7 +35,7 @@ func startAviasalesBot() error {
 		log.Panic(err)
 	}
 
-	// bot.Debug = true
+	bot.Debug = true
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
 	u := tgbotapi.NewUpdate(0)
