@@ -5,7 +5,6 @@ import (
 	"log"
 	"time"
 
-    
 	"github.com/KhilikEgor/AviasalesBot/internal/service"
 	"github.com/KhilikEgor/AviasalesBot/internal/domain"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
