@@ -29,6 +29,7 @@ services:
     command: go run cmd/app/main.go -tg.token=${TELEGRAM_TOKEN}
     networks:
       - aviasales-network
+    restart: always
 
 volumes:
   db-data:
