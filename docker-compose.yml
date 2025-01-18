@@ -20,7 +20,7 @@ services:
       retries: 5
 
   app:
-    image: khilik/server-bot-aviasales
+    image: khilik/testbot
     depends_on:
       - psql
     environment:
