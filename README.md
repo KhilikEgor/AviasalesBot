@@ -1,8 +1,8 @@
 # Aviasales Vacancies Bot
 ![image](https://github.com/user-attachments/assets/9f3c74be-e904-4a1f-a3be-f8bb90f865a4)
-https://t.me/AviasalesVacanciesBot
 
-**AviasalesVacanciesBot** - данный Telegram-бот я создал для упрощения поиска и отслеживания вакансий в Aviasales (прям как для авиабилетов)
+**AviasalesVacanciesBot** - данный Telegram-бот я создал для упрощения поиска и отслеживания вакансий в Aviasales (прям как для авиабилетов) 
+https://t.me/AviasalesVacanciesBot
 
 ## Технологический стек
 * Язык программирования: Go (Golang)
