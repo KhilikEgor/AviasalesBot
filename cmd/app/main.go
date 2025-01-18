@@ -25,7 +25,7 @@ func startAviasalesBot() error {
 	flag.Parse()
 
 	db.Connect()
-	err := db.DB.AutoMigrate(&domain.User{})
+	err := db.DB.AutoMigrate(&domain.User{}, domain.Vacancy{})
 	if err != nil {
 		log.Panic(err)
 	}
